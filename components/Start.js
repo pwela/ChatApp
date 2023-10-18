@@ -29,6 +29,10 @@ const Start = ({ navigation }) => {
           value={name}
           onChangeText={setName}
           placeholder="Your Name"
+          accessible={true}
+          accessibilityLabel="Enter username"
+          accessibilityHint="Enter the that will appear in the chat"
+          accessibilityRole="text"
         />
         <View style={styles.backgroundColorContainer}>
           <Text style={styles.backgroundColorText}>
@@ -40,6 +44,10 @@ const Start = ({ navigation }) => {
                 key={colors.indexOf(color)}
                 style={[styles.colorLayout, { backgroundColor: color }]}
                 onPress={() => setColor(color)}
+                accessible={true}
+                accessibilityLabel="Select color"
+                accessibilityHint="Lets you choose a backgound color for you App"
+                accessibilityRole="button"
               />
             ))}
           </View>
@@ -49,6 +57,10 @@ const Start = ({ navigation }) => {
             navigation.navigate("Chat", { name: name, color: color })
           }
           style={styles.startChattingContainer}
+          accessible={true}
+          accessibilityLabel="Start chatting"
+          accessibilityHint="Enter in a chat conversation"
+          accessibilityRole="button"
         >
           <Text style={styles.startChattingText}>Start Chatting</Text>
         </TouchableOpacity>
