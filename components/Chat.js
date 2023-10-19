@@ -1,19 +1,30 @@
 import { useState, useEffect } from "react";
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
 import { StyleSheet, View, Text, KeyboardAvoidingView } from "react-native";
+import {
+  collection,
+  getDocs,
+  onSnapshot,
+  addDoc,
+  query,
+  orderBy,
+  setDoc,
+} from "firebase/firestore";
 
-const Chat = ({ route, navigation }) => {
+const Chat = ({ route, navigation, db }) => {
   // extract props from navigation
   const { name } = route.params;
+  const { userID } = route.params;
   const { color } = route.params;
   // Msg statate initialisation
   const [messages, setMessages] = useState([]);
 
   // send a message
   const onSend = (newMessages) => {
-    setMessages((previousMessages) =>
-      GiftedChat.append(previousMessages, newMessages)
-    );
+    addDoc(collection(db, "messages"), newMessages[0]);
+    // setMessages((previousMessages) =>
+    //   GiftedChat.append(previousMessages, newMessages)
+    // );
   };
 
   // function to render bubble
@@ -32,28 +43,29 @@ const Chat = ({ route, navigation }) => {
       />
     );
   };
+
   useEffect(() => {
     navigation.setOptions({ title: name });
-    // static messages
-    setMessages([
-      {
-        _id: 1,
-        text: "Hello developer",
-        createdAt: new Date(),
-        user: {
-          _id: 2,
-          name: "React Native",
-          avatar: "https://picsum.photos/id/237/200/300",
-        },
-      },
-      // system message
-      {
-        _id: 2,
-        text: "You have entered the chat",
-        createdAt: new Date(),
-        system: true,
-      },
-    ]);
+    const unsubMessages = onSnapshot(
+      query(collection(db, "messages"), orderBy("createdAt", "desc")),
+      (documentsSnapshot) => {
+        let newMessages = [];
+        documentsSnapshot.forEach((doc) => {
+          newMessages.push({ id: doc.id, ...doc.data() });
+        });
+        let convertedMessages = [];
+        newMessages.forEach((message) => {
+          message.createdAt = Date(message.createdAt);
+          convertedMessages.push(message);
+        });
+        setMessages(convertedMessages);
+      }
+    );
+
+    // Clean up code
+    return () => {
+      if (unsubMessages) unsubMessages();
+    };
   }, []);
   return (
     <View style={[styles.container, { backgroundColor: color }]}>
@@ -62,7 +74,8 @@ const Chat = ({ route, navigation }) => {
         renderBubble={renderBubble}
         onSend={(messages) => onSend(messages)}
         user={{
-          _id: 1,
+          _id: userID,
+          name: name,
         }}
         accessible={true}
         accessibilityLabel="Chat window"
