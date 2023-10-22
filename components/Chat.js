@@ -9,6 +9,8 @@ import {
   Text,
   KeyboardAvoidingView,
   Image,
+  TouchableOpacity,
+  Platform,
 } from "react-native";
 import CustomActions from "./CustomActions";
 import {
@@ -20,12 +22,16 @@ import {
   orderBy,
   setDoc,
 } from "firebase/firestore";
+import { Audio } from "expo-av";
 
 const Chat = ({ route, navigation, db, isConnected, storage }) => {
   // extract props from navigation
   const { name } = route.params;
   const { userID } = route.params;
   const { color } = route.params;
+
+  // Currently played sound object
+  let soundObject = null;
   // Msg statate initialisation
   const [messages, setMessages] = useState([]);
 
@@ -85,6 +91,27 @@ const Chat = ({ route, navigation, db, isConnected, storage }) => {
     return null;
   };
 
+  // Render audio
+  const renderAudioBubble = (props) => {
+    return (
+      <View {...props}>
+        <TouchableOpacity
+          style={{ backgroundColor: "#FF0", borderRadius: 10, margin: 5 }}
+          onPress={async () => {
+            if (soundObject) soundObject.unloadAsync();
+            const { sound } = await Audio.Sound.createAsync({
+              uri: props.currentMessage.audio,
+            });
+            await sound.playAsync();
+          }}
+        >
+          <Text style={{ textAlign: "center", color: "black", padding: 5 }}>
+            Play Sound
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
   // Load cached messages
 
   const loadCachedMessages = async () => {
@@ -131,6 +158,7 @@ const Chat = ({ route, navigation, db, isConnected, storage }) => {
     // Clean up code
     return () => {
       if (unsubMessages) unsubMessages();
+      if (soundObject) soundObject.unloadAsync();
     };
   }, [isConnected]);
 
@@ -142,6 +170,7 @@ const Chat = ({ route, navigation, db, isConnected, storage }) => {
         renderInputToolbar={renderInputToolbar}
         renderActions={renderCustomActions}
         renderCustomView={renderCustomView}
+        renderMessageAudio={renderAudioBubble}
         onSend={(messages) => onSend(messages)}
         user={{
           _id: userID,
