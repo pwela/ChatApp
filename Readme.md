@@ -3,8 +3,8 @@
 Chat app for mobile devices using react native.
 The app will provide users with a chat interface and options to share images and thier location.
 
-![Screenshot of ChatApp homescreen](/ChatApp-assets/homescreen.jpg)
-![Chat interface](/ChatApp-assets/chat.jpg)
+![Screenshot of ChatApp homescreen](/assets/homescreen.jpg)
+![Chat interface](/assets/chat.jpg)
 
 # Key features
 
