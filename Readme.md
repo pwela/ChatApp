@@ -2,9 +2,9 @@
 
 - Chat app for mobile devices built using react native.
 
-![Screenshot of ChatApp homescreen](/assets/homescreen.jpg) ![Chat interface](/assets/chat.jpg)
-<img alt="Screenshot of ChatApp homescreen" src="/assets/homescreen.jpg">
-<img alt="Chat interface" src="/assets/chat.jpg">
+<span>
+<img alt="Screenshot of ChatApp homescreen" src="/assets/homescreen.jpg"/> <img alt="Chat interface" src="/assets/chat.jpg"/>
+</span>
 
 # Key features
 
@@ -52,14 +52,12 @@
 
 ## Setting up Google's Firebase Database
 
-Firebase link -> (https://firebase.google.com/)
-
 ### Messages database
 
-1. Sign-up or sign in to Firebase and create a project
+1. Sign-up or sign in to Firebase (https://firebase.google.com/) and create a project
 2. npm install firebase to add firebase connection into your project directory
 3. Copy the Firebase Config from the project setting tab and paste into you App.js file
-4. In order to allow read and write access to the database - navigate to the rules tab in the console and change the code from allow read, write: if false; to allow read, write: if true; then click publish
+4. In order to allow read and write access to the database - navigate to the rules tab in the console and change the code from `allow read, write: if false;` to `allow read, write: if true;` then click `Publish`.
 
 ### Media database
 
