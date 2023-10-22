@@ -1,7 +1,16 @@
 import { useState, useEffect } from "react";
+import * as ImagePicker from "expo-image-picker";
+import MapView from "react-native-maps";
 import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { StyleSheet, View, Text, KeyboardAvoidingView } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  KeyboardAvoidingView,
+  Image,
+} from "react-native";
+import CustomActions from "./CustomActions";
 import {
   collection,
   getDocs,
@@ -12,7 +21,7 @@ import {
   setDoc,
 } from "firebase/firestore";
 
-const Chat = ({ route, navigation, db, isConnected }) => {
+const Chat = ({ route, navigation, db, isConnected, storage }) => {
   // extract props from navigation
   const { name } = route.params;
   const { userID } = route.params;
@@ -51,6 +60,31 @@ const Chat = ({ route, navigation, db, isConnected }) => {
     else return null;
   };
 
+  // Render action button
+  const renderCustomActions = (props) => {
+    return <CustomActions userID={userID} storage={storage} {...props} />;
+  };
+
+  // Render Location
+  const renderCustomView = (props) => {
+    const { currentMessage } = props;
+    if (currentMessage.location) {
+      return (
+        <MapView
+          style={{ width: 150, height: 100, borderRadius: 13, margin: 3 }}
+          region={{
+            latitude: currentMessage.location.latitude,
+            longitude: currentMessage.location.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        />
+      );
+    }
+
+    return null;
+  };
+
   // Load cached messages
 
   const loadCachedMessages = async () => {
@@ -58,7 +92,7 @@ const Chat = ({ route, navigation, db, isConnected }) => {
     setMessages(JSON.parse(cachedMessages));
   };
 
-  // Add messages to cahche
+  // Add messages to cache
   const cacheMessages = async (messagesToCache) => {
     try {
       await AsyncStorage.setItem("messages", JSON.stringify(messagesToCache));
@@ -106,6 +140,8 @@ const Chat = ({ route, navigation, db, isConnected }) => {
         messages={messages}
         renderBubble={renderBubble}
         renderInputToolbar={renderInputToolbar}
+        renderActions={renderCustomActions}
+        renderCustomView={renderCustomView}
         onSend={(messages) => onSend(messages)}
         user={{
           _id: userID,

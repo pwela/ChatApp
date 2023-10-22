@@ -1,4 +1,6 @@
 import { StyleSheet, Text, View, LogBox, Alert } from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import { getStorage } from "firebase/storage";
 import { initializeApp } from "firebase/app";
 import {
   getFirestore,
@@ -32,6 +34,10 @@ const App = () => {
   // Initialize Cloud Firestore and get a reference to the service
   const db = getFirestore(app);
 
+  // Initalize image stograge handler
+
+  const storage = getStorage(app);
+
   // state that represents the network connectivity status
   const connectionStatus = useNetInfo();
 
@@ -53,6 +59,7 @@ const App = () => {
             <Chat
               isConnected={connectionStatus.isConnected}
               db={db}
+              storage={storage}
               {...props}
             />
           )}
